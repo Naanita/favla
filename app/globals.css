@@ -1194,13 +1194,38 @@ html[data-theme-status="dark"] body {
 }
 
 @media (max-width: 767px) {
+  /* Compact full-width bar: logo and controls stay pinned at the ends;
+     only the link row scrolls horizontally between them. */
   .favla-navbar {
-    overflow-x: auto;
-    scrollbar-width: none;
+    left: 0.75em;
+    right: 0.75em;
+    transform: none;
+    width: auto;
+    max-width: none;
+    height: 64px;
+    padding-inline: 0.75em;
+    font-size: 14px;
+    gap: 0.1em;
   }
 
-  .favla-navbar::-webkit-scrollbar {
+  .favla-navbar__logo {
+    padding: 0.4em 0.6em;
+  }
+
+  .favla-navbar__links {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .favla-navbar__links::-webkit-scrollbar {
     display: none;
+  }
+
+  .favla-navbar__divider {
+    margin-inline: 0.2em;
   }
 }
 

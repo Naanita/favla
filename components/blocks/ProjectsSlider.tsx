@@ -149,7 +149,7 @@ export function ProjectsSlider({
           className="md:col-span-4"
         />
 
-        <div className="md:col-span-8 md:overflow-hidden">
+        <div className="overflow-hidden md:col-span-8">
           <LoopSlider
             items={projects}
             ariaLabel="Proyectos destacados"

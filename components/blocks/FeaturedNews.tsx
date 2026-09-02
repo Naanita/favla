@@ -166,18 +166,18 @@ export function FeaturedNews({
       style={bg ? { backgroundColor: bg.color } : undefined}
       className="bg-forest-deep py-24 text-paper md:py-36"
     >
-      <div className="favla-container grid grid-cols-1 gap-14 md:grid-cols-12 md:gap-8">
+      <div className="favla-container grid grid-cols-1 gap-14 lg:grid-cols-12 lg:gap-8">
         <SectionIntro
           eyebrow={eyebrow}
           title={title}
           description={description}
           cta={viewAllButton}
           tone="light"
-          className="md:col-span-4"
+          className="lg:col-span-4"
         />
 
-        <div className="md:col-span-8" ref={gridRef}>
-          <div className="hidden gap-6 md:flex">
+        <div className="lg:col-span-8" ref={gridRef}>
+          <div className="hidden gap-6 lg:flex">
             {articles.map((article, i) => (
               <ArticleCard
                 key={article.id ?? i}
@@ -189,12 +189,12 @@ export function FeaturedNews({
             ))}
           </div>
 
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <DraggableTrack
               ref={trackHandle}
               ariaLabel="Noticias"
               onActiveIndexChange={handleActiveIndexChange}
-              itemClassName="w-[85%] pr-4"
+              itemClassName="w-[85%] pr-4 sm:w-[60%] md:w-[48%]"
             >
               {articles.map((article, i) => (
                 <ArticleCard
