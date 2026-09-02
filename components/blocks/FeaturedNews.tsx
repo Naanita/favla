@@ -194,7 +194,7 @@ export function FeaturedNews({
               ref={trackHandle}
               ariaLabel="Noticias"
               onActiveIndexChange={handleActiveIndexChange}
-              itemClassName="w-[85%] pr-4 sm:w-[60%] md:w-[48%]"
+              itemClassName="w-[85%] pr-4 sm:w-[65%] md:w-[56%]"
             >
               {articles.map((article, i) => (
                 <ArticleCard

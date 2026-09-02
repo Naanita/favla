@@ -35,15 +35,25 @@ export const DraggableTrack = forwardRef<
     const first = track.children[0] as HTMLElement | undefined;
     if (!first) return 0;
     const style = getComputedStyle(track);
-    const gap = parseFloat(style.columnGap || style.gap || "0");
-    return first.getBoundingClientRect().width + gap;
+    // computed column-gap is the string "normal" (not "0") on flex
+    // containers without an explicit gap — parseFloat("normal") is NaN,
+    // which silently poisoned every scroll target into 0.
+    const gap = Number.parseFloat(style.columnGap || style.gap || "0");
+    return first.getBoundingClientRect().width + (Number.isFinite(gap) ? gap : 0);
   }, []);
 
   useImperativeHandle(ref, () => ({
     scrollByCards(direction) {
       const track = trackRef.current;
-      if (!track) return;
-      track.scrollBy({ left: getStep() * direction, behavior: "smooth" });
+      const step = getStep();
+      if (!track || !step) return;
+      // scrollBy on a snap-mandatory container can get cancelled by the snap
+      // engine and land back where it started — computing the target snap
+      // index and scrolling to its exact position is reliable everywhere.
+      const current = Math.round(track.scrollLeft / step);
+      const maxIndex = Math.ceil((track.scrollWidth - track.clientWidth) / step);
+      const next = Math.max(0, Math.min(maxIndex, current + direction));
+      track.scrollTo({ left: step * next, behavior: "smooth" });
     },
     scrollToIndex(index) {
       const track = trackRef.current;
@@ -51,6 +61,31 @@ export const DraggableTrack = forwardRef<
       track.scrollTo({ left: getStep() * index, behavior: "smooth" });
     },
   }));
+
+  // With snap-mandatory, a card can only be navigated to if its snap-start
+  // position is reachable — otherwise the snap engine reverts the scroll to
+  // the nearest reachable point (with 2 cards, that's always 0, so arrows
+  // appear dead). A trailing spacer of (track width - card width) makes
+  // every card's snap-start reachable. It must be a real element, not track
+  // padding: the cards' percentage widths resolve against the track's
+  // content box, so padding would shrink them in a feedback loop.
+  const spacerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    function updateSpacer() {
+      const el = trackRef.current;
+      const spacer = spacerRef.current;
+      const first = el?.children[0] as HTMLElement | undefined;
+      if (!el || !spacer || !first || first === spacer) return;
+      const width = Math.max(0, el.clientWidth - first.getBoundingClientRect().width);
+      spacer.style.width = `${width}px`;
+    }
+    updateSpacer();
+    const ro = new ResizeObserver(updateSpacer);
+    ro.observe(track);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -122,6 +157,7 @@ export const DraggableTrack = forwardRef<
           {child}
         </div>
       ))}
+      <div ref={spacerRef} aria-hidden="true" className="shrink-0" />
     </div>
   );
 });

@@ -1,10 +1,12 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { CtaButton, type CtaButtonType } from "@/components/ui/CtaButton";
 import { ThemeToggleButton } from "@/components/ui/ThemeToggleButton";
 import { LanguageModal } from "@/components/ui/LanguageModal";
+import { SiteMenu } from "@/components/layout/SiteMenu";
 import { getMediaUrl, getMediaAlt, type MediaField } from "@/lib/media";
 import { useSectionTheme } from "@/hooks/useSectionTheme";
 
@@ -16,6 +18,7 @@ export function SiteHeader({
   logo,
   navigationItems,
   primaryButton,
+  menuLabel = "Menú",
 }: {
   logo?: MediaField;
   navigationItems?: NavItem[] | null;
@@ -30,60 +33,100 @@ export function SiteHeader({
   hideOnScrollDown?: boolean | null;
 }) {
   const navItems = navigationItems ?? [];
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { theme } = useSectionTheme(NAV_OFFSET);
   const navTheme = theme || "light";
 
+  useEffect(() => {
+    document.body.classList.toggle("no-scroll", menuOpen);
+    return () => document.body.classList.remove("no-scroll");
+  }, [menuOpen]);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape" && menuOpen) {
+        setMenuOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
   return (
-    <nav className="favla-navbar" data-theme-nav={navTheme} aria-label="Navegación principal">
-      <Link href="/" className="favla-navbar__logo focus-ring" aria-label="FAVLA — inicio">
-        {logo ? (
-          <Image
-            src={getMediaUrl(logo)}
-            alt={getMediaAlt(logo, "FAVLA")}
-            width={100}
-            height={34}
-            className="h-6 w-auto"
-            priority
-          />
-        ) : (
-          <span className="font-serif text-lg tracking-wide">FAVLA</span>
+    <>
+      <nav className="favla-navbar" data-theme-nav={navTheme} aria-label="Navegación principal">
+        <Link href="/" className="favla-navbar__logo focus-ring" aria-label="FAVLA — inicio">
+          {logo ? (
+            <Image
+              src={getMediaUrl(logo)}
+              alt={getMediaAlt(logo, "FAVLA")}
+              width={100}
+              height={34}
+              className="h-6 w-auto"
+              priority
+            />
+          ) : (
+            <span className="font-serif text-lg tracking-wide">FAVLA</span>
+          )}
+        </Link>
+
+        <div className="favla-navbar__links">
+          {navItems.map((item, i) => (
+            <Link
+              key={i}
+              href={item.link}
+              target={item.openInNewTab ? "_blank" : undefined}
+              rel={item.openInNewTab ? "noopener noreferrer" : undefined}
+              className="favla-navbar__link focus-ring"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+
+        {primaryButton?.label && (
+          <>
+            <span className="favla-navbar__divider" aria-hidden="true" />
+            <CtaButton
+              type={primaryButton.type || "fill"}
+              href={primaryButton.link || "#"}
+              label={primaryButton.label}
+              tone="light"
+              cursorGrow={primaryButton.cursorGrow}
+              className="!px-4 !py-2 text-xs"
+            />
+          </>
         )}
-      </Link>
 
-      <div className="favla-navbar__links">
-        {navItems.map((item, i) => (
-          <Link
-            key={i}
-            href={item.link}
-            target={item.openInNewTab ? "_blank" : undefined}
-            rel={item.openInNewTab ? "noopener noreferrer" : undefined}
-            className="favla-navbar__link focus-ring"
-          >
-            {item.label}
-          </Link>
-        ))}
-      </div>
+        <span className="favla-navbar__divider" aria-hidden="true" />
 
-      {primaryButton?.label && (
-        <>
-          <span className="favla-navbar__divider" aria-hidden="true" />
-          <CtaButton
-            type={primaryButton.type || "fill"}
-            href={primaryButton.link || "#"}
-            label={primaryButton.label}
-            tone="light"
-            cursorGrow={primaryButton.cursorGrow}
-            className="!px-4 !py-2 text-xs"
-          />
-        </>
-      )}
+        <div className="favla-navbar__controls">
+          <LanguageModal />
+          <ThemeToggleButton />
+        </div>
 
-      <span className="favla-navbar__divider" aria-hidden="true" />
+        <button
+          ref={menuButtonRef}
+          type="button"
+          onClick={() => setMenuOpen((v) => !v)}
+          data-menu-open={menuOpen}
+          aria-expanded={menuOpen}
+          aria-label={menuOpen ? "Cerrar menú" : menuLabel || "Abrir menú"}
+          className="favla-navbar__burger focus-ring"
+        >
+          <span className="favla-navbar__burger-bar" aria-hidden="true" />
+          <span className="favla-navbar__burger-bar" aria-hidden="true" />
+        </button>
+      </nav>
 
-      <div className="favla-navbar__controls">
-        <LanguageModal />
-        <ThemeToggleButton />
-      </div>
-    </nav>
+      <SiteMenu
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        items={navItems}
+        primaryButton={primaryButton}
+      />
+    </>
   );
 }

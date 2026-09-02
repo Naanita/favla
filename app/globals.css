@@ -1193,9 +1193,47 @@ html[data-theme-status="dark"] body {
   flex-shrink: 0;
 }
 
+.favla-navbar__burger {
+  display: none;
+  position: relative;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.favla-navbar__burger-bar {
+  position: absolute;
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background-color: currentColor;
+  transition: transform 0.45s cubic-bezier(0.5, 0.5, 0, 1);
+}
+
+.favla-navbar__burger-bar:nth-child(1) {
+  transform: translateY(-3px) rotate(0.001deg);
+}
+
+.favla-navbar__burger-bar:nth-child(2) {
+  transform: translateY(3px) rotate(0.001deg);
+}
+
+.favla-navbar__burger[data-menu-open="true"] .favla-navbar__burger-bar:nth-child(1) {
+  transform: translateY(0) rotate(45deg);
+}
+
+.favla-navbar__burger[data-menu-open="true"] .favla-navbar__burger-bar:nth-child(2) {
+  transform: translateY(0) rotate(-45deg);
+}
+
 @media (max-width: 767px) {
-  /* Compact full-width bar: logo and controls stay pinned at the ends;
-     only the link row scrolls horizontally between them. */
+  /* Compact bar: just the logo and the hamburger; everything else lives
+     inside the full-screen menu the hamburger opens. */
   .favla-navbar {
     left: 0.75em;
     right: 0.75em;
@@ -1205,27 +1243,19 @@ html[data-theme-status="dark"] body {
     height: 64px;
     padding-inline: 0.75em;
     font-size: 14px;
-    gap: 0.1em;
+    justify-content: space-between;
   }
 
   .favla-navbar__logo {
     padding: 0.4em 0.6em;
   }
 
-  .favla-navbar__links {
-    flex: 1 1 auto;
-    min-width: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .favla-navbar__links::-webkit-scrollbar {
+  .favla-navbar > *:not(.favla-navbar__logo):not(.favla-navbar__burger) {
     display: none;
   }
 
-  .favla-navbar__divider {
-    margin-inline: 0.2em;
+  .favla-navbar__burger {
+    display: flex;
   }
 }
 
