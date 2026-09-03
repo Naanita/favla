@@ -8,6 +8,7 @@ import { prefersStaticMotion } from "@/lib/animations";
 import { CtaButton, type CtaButtonType } from "@/components/ui/CtaButton";
 import { ThemeToggleButton } from "@/components/ui/ThemeToggleButton";
 import { LanguageModal } from "@/components/ui/LanguageModal";
+import { TransitionLink } from "@/components/ui/TransitionLink";
 
 gsap.registerPlugin(useGSAP);
 
@@ -106,21 +107,35 @@ export function SiteMenu({
     >
       <nav aria-label="Navegación móvil">
         <ul ref={listRef} className="flex flex-col gap-1">
-          {items.map((item, i) => (
-            <li key={i} className="overflow-hidden border-b border-line-light py-3">
-              <Link
-                ref={i === 0 ? firstLinkRef : undefined}
-                href={item.link}
-                target={item.openInNewTab ? "_blank" : undefined}
-                rel={item.openInNewTab ? "noopener noreferrer" : undefined}
-                onClick={onClose}
-                className="favla-site-menu__link focus-ring flex items-center gap-4 font-serif text-4xl"
-              >
-                {item.label}
-                <span className="favla-site-menu__dot" aria-hidden="true" />
-              </Link>
-            </li>
-          ))}
+          {items.map((item, i) =>
+            item.openInNewTab ? (
+              <li key={i} className="overflow-hidden border-b border-line-light py-3">
+                <Link
+                  ref={i === 0 ? firstLinkRef : undefined}
+                  href={item.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={onClose}
+                  className="favla-site-menu__link focus-ring flex items-center gap-4 font-serif text-4xl"
+                >
+                  {item.label}
+                  <span className="favla-site-menu__dot" aria-hidden="true" />
+                </Link>
+              </li>
+            ) : (
+              <li key={i} className="overflow-hidden border-b border-line-light py-3">
+                <TransitionLink
+                  ref={i === 0 ? firstLinkRef : undefined}
+                  href={item.link}
+                  onClick={onClose}
+                  className="favla-site-menu__link focus-ring flex items-center gap-4 font-serif text-4xl"
+                >
+                  {item.label}
+                  <span className="favla-site-menu__dot" aria-hidden="true" />
+                </TransitionLink>
+              </li>
+            ),
+          )}
         </ul>
       </nav>
 

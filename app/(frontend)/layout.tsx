@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/blocks/SiteHeader";
 import { SiteFooter } from "@/components/blocks/SiteFooter";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { SocialLinksProvider } from "@/components/SocialLinksContext";
+import { PageTransitionProvider } from "@/components/layout/PageTransition";
 import "../globals.css";
 
 // Placeholder for Roc Grotesk Wide 500 until the licensed font files are
@@ -61,10 +62,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="min-h-full bg-paper text-ink">
-        <CustomCursor />
-        <SiteHeader {...header} />
-        <SocialLinksProvider links={footer.socialLinks}>{children}</SocialLinksProvider>
-        <SiteFooter {...footer} />
+        <PageTransitionProvider>
+          <CustomCursor />
+          <SiteHeader {...header} />
+          <SocialLinksProvider links={footer.socialLinks}>{children}</SocialLinksProvider>
+          <SiteFooter {...footer} />
+        </PageTransitionProvider>
       </body>
     </html>
   );

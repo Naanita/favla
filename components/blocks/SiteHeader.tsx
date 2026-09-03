@@ -6,6 +6,7 @@ import Link from "next/link";
 import { CtaButton, type CtaButtonType } from "@/components/ui/CtaButton";
 import { ThemeToggleButton } from "@/components/ui/ThemeToggleButton";
 import { LanguageModal } from "@/components/ui/LanguageModal";
+import { TransitionLink } from "@/components/ui/TransitionLink";
 import { SiteMenu } from "@/components/layout/SiteMenu";
 import { getMediaUrl, getMediaAlt, type MediaField } from "@/lib/media";
 import { useSectionTheme } from "@/hooks/useSectionTheme";
@@ -73,17 +74,23 @@ export function SiteHeader({
         </Link>
 
         <div className="favla-navbar__links">
-          {navItems.map((item, i) => (
-            <Link
-              key={i}
-              href={item.link}
-              target={item.openInNewTab ? "_blank" : undefined}
-              rel={item.openInNewTab ? "noopener noreferrer" : undefined}
-              className="favla-navbar__link focus-ring"
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item, i) =>
+            item.openInNewTab ? (
+              <Link
+                key={i}
+                href={item.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="favla-navbar__link focus-ring"
+              >
+                {item.label}
+              </Link>
+            ) : (
+              <TransitionLink key={i} href={item.link} className="favla-navbar__link focus-ring">
+                {item.label}
+              </TransitionLink>
+            ),
+          )}
         </div>
 
         {primaryButton?.label && (
